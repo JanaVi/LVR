@@ -355,6 +355,9 @@ class Ali():
             mn|=i
         return Ali(*tuple(mn))
 
+
+
+######################## Primeri za cnf ##########################################################################
 p = Spr("p")
 q = Spr("q")
 r = Spr("r")
@@ -372,6 +375,35 @@ primer5 = In(Ali(p,q),Ali(q,r),Ali(r,p),Neg(In(p,q)),Neg(In(q,r)),Neg(In(r,p)))
 primer6 = Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c')))
 
 primer7 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),Spr('K'))
+
+##################################### Primeri za SAT ############################################################
+
+def SATprimer(niz,n):
+    '''Funkcija sprejme niz:
+    enostavenIN
+    enostavenALI
+    povezanostJA1
+    povezanostJA2
+    in dolžino formule.'''
+    if niz == 'enostavenIN':
+        return In(*tuple('a'+str(i) for i in range(n)))
+    elif niz == 'enostavenALI':
+        return Ali(*tuple('a'+str(i) for i in range(n)))
+    elif niz == 'povezanostJA1':
+        return povezanost({'a': {'b'},'b':{'a','c'},'c':{'b','d'},'d':{'c','e'},'e':{'d'}})
+    elif niz == 'povezanostJA2':
+        return povezanost({'a':{'b','c'},'b':{'a','e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
+    elif niz == 'povezanostNE1':
+        return povezanost({'a':{'c'},'b':{'e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
+    elif niz =='povezanostNE2':
+        return povezanost({'a':{'b'},'b':{'a'},'c':{'d'},'d':{'c'}})
+    
+    
+  
+
+
+    
+
 
 ###################### VAJE ŠTEVILKA 2, 3 ########################################################################
 
@@ -444,7 +476,7 @@ def povezanost(g):
         )
     
 
-    return In(f1,f2,f3,f4).poenostavi()
+    return In(f1,f2,f3,f4)
 
             
         
