@@ -377,6 +377,14 @@ primer6 = Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c')))
 primer7 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),Spr('K'))
 
 ##################################### Primeri za SAT ############################################################
+a1=Spr('a1')
+a2=Spr('a2')
+a3=Spr('a3')
+a4=Spr('a4')
+a5=Spr('a5')
+a6=Spr('a6')
+
+
 
 def SATprimer(niz,n):
     '''Funkcija sprejme niz:
@@ -384,7 +392,9 @@ def SATprimer(niz,n):
     enostavenALI
     povezanostJA1
     povezanostJA2
-    in dolžino formule.'''
+    enostavenJA
+    enostavenNE
+    in dolžino formule za enostavne primere.'''
     if niz == 'enostavenIN':
         return In(*tuple('a'+str(i) for i in range(n)))
     elif niz == 'enostavenALI':
@@ -397,6 +407,10 @@ def SATprimer(niz,n):
         return povezanost({'a':{'c'},'b':{'e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
     elif niz =='povezanostNE2':
         return povezanost({'a':{'b'},'b':{'a'},'c':{'d'},'d':{'c'}})
+    elif niz == 'enostavenJA':
+        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a1))),a5)
+    elif niz == 'enostavenNE':
+        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a6))),a5)
     
     
   
