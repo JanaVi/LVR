@@ -365,6 +365,9 @@ class Ali():
             mn|=i
         return Ali(*tuple(mn))
 
+
+
+######################## Primeri za cnf ##########################################################################
 p = Spr("p")
 q = Spr("q")
 r = Spr("r")
@@ -382,6 +385,49 @@ primer5 = In(Ali(p,q),Ali(q,r),Ali(r,p),Neg(In(p,q)),Neg(In(q,r)),Neg(In(r,p)))
 primer6 = Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c')))
 
 primer7 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),Spr('K'))
+
+##################################### Primeri za SAT ############################################################
+a1=Spr('a1')
+a2=Spr('a2')
+a3=Spr('a3')
+a4=Spr('a4')
+a5=Spr('a5')
+a6=Spr('a6')
+
+
+
+def SATprimer(niz,n):
+    '''Funkcija sprejme niz:
+    enostavenIN
+    enostavenALI
+    povezanostJA1
+    povezanostJA2
+    enostavenJA
+    enostavenNE
+    in dolžino formule za enostavne primere.'''
+    if niz == 'enostavenIN':
+        return In(*tuple('a'+str(i) for i in range(n)))
+    elif niz == 'enostavenALI':
+        return Ali(*tuple('a'+str(i) for i in range(n)))
+    elif niz == 'povezanostJA1':
+        return povezanost({'a': {'b'},'b':{'a','c'},'c':{'b','d'},'d':{'c','e'},'e':{'d'}})
+    elif niz == 'povezanostJA2':
+        return povezanost({'a':{'b','c'},'b':{'a','e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
+    elif niz == 'povezanostNE1':
+        return povezanost({'a':{'c'},'b':{'e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
+    elif niz =='povezanostNE2':
+        return povezanost({'a':{'b'},'b':{'a'},'c':{'d'},'d':{'c'}})
+    elif niz == 'enostavenJA':
+        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a1))),a5)
+    elif niz == 'enostavenNE':
+        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a6))),a5)
+    
+    
+  
+
+
+    
+
 
 ###################### VAJE ŠTEVILKA 2, 3 ########################################################################
 
@@ -454,7 +500,7 @@ def povezanost(g):
         )
     
 
-    return In(f1,f2,f3,f4).poenostavi()
+    return In(f1,f2,f3,f4)
 
             
 ############ SAT #############################
