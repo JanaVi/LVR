@@ -17,6 +17,12 @@ class T():
     def poenostavi(self):
         return self
 
+    def nnf(self):
+        return self
+
+    def cnf(self):
+        return self
+
 ###################################################
 class F():
     def __init__(self):
@@ -35,6 +41,12 @@ class F():
         return False
 
     def poenostavi(self):
+        return self
+
+    def nnf(self):
+        return self
+
+    def cnf(self):
         return self
 
 ###################################################
@@ -60,7 +72,11 @@ class Spr():
     def poenostavi(self):
         return self
 
+    def nnf(self):
+        return self
 
+    def cnf(self):
+        return self
     
 ######################################################
 class Neg():
@@ -101,7 +117,24 @@ class Neg():
         elif tip == Ali:
             return In(*tuple(Neg(i) for i in a.sez)).poenostavi()
 
+    def nnf(self): #negacije spravi notri do konca
+        a = self.izr
+        tip = type(a)
+        if tip == T:
+            return F()
+        elif tip == F:
+            return T()
+        elif tip == Spr:
+            return Neg(a)
+        elif tip == Neg:
+            return a.izr
+        elif tip == In:
+            return Ali(*tuple(Neg(i).nnf() for i in a.sez))
+        elif tip == Ali:
+            return In(*tuple(Neg(i).nnf() for i in a.sez))
 
+    def cnf(self): #že imamo nnf, torej je negacija lahko samo pri spremenljivki
+        return Neg(self.izr)
 
 #####################################################
 class In():
@@ -135,6 +168,14 @@ class In():
                 return a
         return a
 
+    def nnf(self):
+        if len(self.sez)==0: return T()
+        elif len(self.sez)==1: return self.sez.pop().nnf()
+        return In(*tuple(i.nnf() for i in self.sez))
+
+    def cnf(self):
+        return In(*tuple(i.cnf() for i in self.sez))
+        
     def poenostavi(self):
         if len(self.sez)==0: return T()
         elif len(self.sez)==1: return self.sez.pop().poenostavi()
@@ -233,6 +274,26 @@ class Ali():
                 return a
         return a
 
+    def nnf(self):
+        if len(self.sez)==0: return F()
+        elif len(self.sez)==1: return self.sez.pop().nnf()
+        return Ali(*tuple(i.nnf() for i in self.sez))
+
+    def cnf(self):
+        seznam = [i.cnf() for i in self.sez]
+        n = len(seznam)
+        nova = seznam[0]
+        #distribucija:
+        for i in range(1,n):
+            if (type(nova) == Spr or type(nova) == Neg) and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
+                nova = Ali(nova,seznam[i])
+            elif type(nova) == Spr or type(nova) == Neg:
+                nova = In(*tuple(Ali(nova,j) for j in seznam[i].sez))
+            elif type(seznam[i]) == Spr or type(seznam[i]) == Neg:
+                nova = In(*tuple(Ali(k,seznam[i]) for k in nova.sez))
+            else: nova = In(*tuple(Ali(k,j) for j in seznam[i].sez for k in nova.sez))
+        return nova
+
     def poenostavi(self):
         if len(self.sez)==0: return F()
         elif len(self.sez)==1: return self.sez.pop().poenostavi()
@@ -308,12 +369,11 @@ primer4 = In(In(p,q),In(q,r),In(r,p))
 
 primer5 = In(Ali(p,q),Ali(q,r),Ali(r,p),Neg(In(p,q)),Neg(In(q,r)),Neg(In(r,p)))
 
-            
+primer6 = Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c')))
 
+primer7 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),Spr('K'))
 
-
-
-###################### VAJE ŠTEVILKA 2 ########################################################################
+###################### VAJE ŠTEVILKA 2, 3 ########################################################################
 
 
 def barvanje(g,k):
@@ -391,40 +451,4 @@ def povezanost(g):
             
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 
