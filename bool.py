@@ -17,9 +17,6 @@ class T():
     def poenostavi(self):
         return self
 
-    def nnf(self):
-        return self
-
     def cnf(self):
         return self
 
@@ -41,9 +38,6 @@ class F():
         return False
 
     def poenostavi(self):
-        return self
-
-    def nnf(self):
         return self
 
     def cnf(self):
@@ -70,9 +64,6 @@ class Spr():
         return slo[self.ime]
 
     def poenostavi(self):
-        return self
-
-    def nnf(self):
         return self
 
     def cnf(self):
@@ -117,7 +108,7 @@ class Neg():
         elif tip == Ali:
             return In(*tuple(Neg(i) for i in a.sez)).poenostavi()
 
-    def nnf(self): #negacije spravi notri do konca
+    def cnf(self):
         a = self.izr
         tip = type(a)
         if tip == T:
@@ -129,12 +120,9 @@ class Neg():
         elif tip == Neg:
             return a.izr
         elif tip == In:
-            return Ali(*tuple(Neg(i).nnf() for i in a.sez))
+            return Ali(*tuple(Neg(i) for i in a.sez)).cnf()
         elif tip == Ali:
-            return In(*tuple(Neg(i).nnf() for i in a.sez))
-
-    def cnf(self): #že imamo nnf, torej je negacija lahko samo pri spremenljivki
-        return Neg(self.izr)
+            return In(*tuple(Neg(i) for i in a.sez)).cnf()
 
 #####################################################
 class In():
@@ -168,24 +156,31 @@ class In():
                 return a
         return a
 
-    def nnf(self):
-        if len(self.sez)==0: return T()
-        elif len(self.sez)==1: return self.sez.pop().nnf()
-        return In(*tuple(i.nnf() for i in self.sez))
-
-    def zdruzi(izraz):
-        seznam = []
-        for i in izraz.sez:
-            if type(i)!=In: seznam.append(i)
-            else:
-                for j in i.sez:
-                    seznam.append(j)
-        return In(*tuple(i for i in seznam))
+    def bistvo(self): #In(Spr(p)) spremeni v Spr(p)
+        if len(self.sez) == 1: return self.sez.pop()
+        else: return self
 
     def cnf(self):
-        a=In(*tuple(i.cnf() for i in self.sez))
-        return a.zdruzi()
-        
+        if len(self.sez)==0: return T()
+        elif len(self.sez)==1: return self.sez.pop().cnf()
+
+        #law of union, law of intersection, complementary law:
+        smiselni = set()
+        for i in self.sez:
+            i = i.cnf()
+            if type(i) == F: return F()
+            elif type(i) == T: pass
+            elif (type(i) == Spr and Neg(i) in smiselni) or (type(i) == Neg and i.izr in smiselni): return F()
+            elif type(i) == Spr or type(i) == Neg: smiselni.add(i)
+            elif type(i) == In: #če imaš In v In, ju združi
+                for j in i.sez:
+                    if (type(j) == Spr and Neg(j) in smiselni) or (type(j) == Neg and j.izr in smiselni): return F()
+                    else: smiselni.add(j)                
+            else: smiselni.add(i) #vsi ostali kompleksni izrazi
+        a = In(*tuple(i for i in smiselni))
+        if len(a.sez) !=0: return a
+        else: return T()
+
     def poenostavi(self):
         if len(self.sez)==0: return T()
         elif len(self.sez)==1: return self.sez.pop().poenostavi()
@@ -231,10 +226,6 @@ class In():
                         In(*tuple(set().union(*tuple(i.sez-presek for i in slo[Ali])))),
                         *tuple(presek)
                         )}
-                
-                
-                
-        
 
         #če imaš In znotraj In, ju lahko združiš
         if In in slo.keys():
@@ -284,25 +275,64 @@ class Ali():
                 return a
         return a
 
-    def nnf(self):
-        if len(self.sez)==0: return F()
-        elif len(self.sez)==1: return self.sez.pop().nnf()
-        return Ali(*tuple(i.nnf() for i in self.sez))
+    def bistvo(self):
+        if len(self.sez) == 1: return self.sez.pop()
+        else: return self
 
     def cnf(self):
-        seznam = [i.cnf() for i in self.sez]
+        if len(self.sez)==0: return F()
+        elif len(self.sez)==1: return self.sez.pop().cnf()
+
+        #law of union, law of intersection, complementary law:
+        smiselni = set()
+        for i in self.sez:
+            i = i.cnf()
+            if type(i) == F: pass
+            elif type(i) == T: return T()
+            elif type(i) == Spr and Neg(i) in smiselni: smiselni.remove(Neg(i))
+            elif type(i) == Neg and i.izr in smiselni: smiselni.remove(i.izr)
+            elif type(i) == Spr or type(i) == Neg: smiselni.add(i)
+            elif type(i) == Ali: #če imaš Ali v Ali, ju združi
+                for j in i.sez:
+                    if type(j) == Spr and Neg(j) in smiselni: smiselni.remove(Neg(j))
+                    elif type(j) == Neg and j.izr in smiselni: smiselni.remove(j.izr)
+                    else: smiselni.add(j)                
+            else: smiselni.add(i) #vsi ostali kompleksni izrazi
+        a = Ali(*tuple(i for i in smiselni))
+        
+        if len(a.sez) == 0: return F()
+
+        seznam = [i for i in a.sez]
         n = len(seznam)
-        nova = seznam[0]
-        #distribucija:
+        nova = seznam[0] #do sedaj že narejen izraz, postopoma distributiramo
+
+
+
+
+
+        
+        #distributivnost:############################################
         for i in range(1,n):
             if (type(nova) == Spr or type(nova) == Neg) and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
-                nova = Ali(nova,seznam[i])
+                nova = Ali(nova,seznam[i]).bistvo()
+
+            elif (type(nova) == Ali and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
+                nova.sez.add(seznam[i])
+                
             elif type(nova) == Spr or type(nova) == Neg:
-                nova = In(*tuple(Ali(nova,j) for j in seznam[i].sez))
+                nova = In(*tuple(Ali(nova,j).bistvo() for j in seznam[i].sez))
+
             elif type(seznam[i]) == Spr or type(seznam[i]) == Neg:
-                nova = In(*tuple(Ali(k,seznam[i]) for k in nova.sez))
-            else: nova = In(*tuple(Ali(k,j) for j in seznam[i].sez for k in nova.sez))
-        return nova
+                nova = In(*tuple(Ali(k,seznam[i]).bistvo() for k in nova.sez))
+                
+            else: nova = In(*tuple(Ali(k,j).bistvo() for j in seznam[i].sez for k in nova.sez))
+        return nova.bistvo()
+
+
+
+
+
+
 
     def poenostavi(self):
         if len(self.sez)==0: return F()
@@ -384,7 +414,14 @@ primer5 = In(Ali(p,q),Ali(q,r),Ali(r,p),Neg(In(p,q)),Neg(In(q,r)),Neg(In(r,p)))
 
 primer6 = Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c')))
 
-primer7 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),Spr('K'))
+primer7 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),F())
+
+primer8 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),Spr('K'))
+
+
+p1=In(T(),F(),Ali(p,Neg(p)))
+p2=Ali(Neg(In(p,r,q,)))
+p3=In(T(),In(p,Neg(p)))
 
 ##################################### Primeri za SAT ############################################################
 a1=Spr('a1')
@@ -420,13 +457,7 @@ def SATprimer(niz,n):
     elif niz == 'enostavenJA':
         return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a1))),a5)
     elif niz == 'enostavenNE':
-        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a6))),a5)
-    
-    
-  
-
-
-    
+        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a6))),a5)    
 
 
 ###################### VAJE ŠTEVILKA 2, 3 ########################################################################
@@ -506,24 +537,23 @@ def povezanost(g):
 ############ SAT #############################
 
 def sat(izraz):
-    if len(izraz.sez) == 0 and type(izraz) == In: return True #če ni stavkov
-    if len(izraz.sez) == 0 and type(izraz) == Ali: return False
-
-    izraz = izraz.nnf()
     izraz = izraz.cnf() #sedaj je izraz v konjuktivni obliki
+    
+    if izraz == T(): return True
+    elif izraz == F(): return False
+    
+##    elif len(izraz.sez) == 0 and type(izraz) == In: return True #če ni stavkov
+##    elif len(izraz.sez) == 0 and type(izraz) == Ali: return False
+
     print('cnf oblika=',izraz)
-    literal = dict()
+    literal = dict() #slovar vseh spremenljivk, skupaj z očitnimi znanimi vrednostmi
     stavki = [i for i in izraz.sez] #stavki, ki jih je še potrebno predelati
     print('začetni stavki=',stavki)
-    
-    for i in izraz.sez: #če je kakšen stavek prazen
-##        if type(i) == Ali:                             #nnf() je Ali() že spremenil v F
-##            if len(i.sez) == 0: return False
+
+
+    #######tega se želimo znebiti že v cnf!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! zaenkrat notri zaradi pravilnosti
+    for i in izraz.sez: #če je kakšen stavek F()
         if type(i) == F: return False
-
-
-
-#################### popravi zgoraj! (p) je lahko Ali(Spr(p)) ali In(Spr(p)), hočeš pa Spr(p)##################################################################
 
         
     for i in izraz.sez: 
@@ -545,11 +575,6 @@ def sat(izraz):
                             stavki.append(Ali(*tuple(a for a in stavek if a!=Neg(i)))) #odstrani stari stavek in ga nadomesti z novim, ki nima negacij naše spremenljivke  
                 else: print('Napaka pri vstavljanju znanih spr. v preostale stavke 1.')
                 
-
-######!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    or (type(stavek)==Ali and len(stavek.sez)==1) or (type(stavek)==In and len(stavek.sez)==1):
-
-
-
             
         elif type(i) == Neg: #samostojna negirana spremenljivka
             stavki.remove(i)
@@ -570,24 +595,6 @@ def sat(izraz):
                         if type(lit) == Neg and lit.izr == i.izr:
                             stavki.remove(stavek)
                 else: print('Napaka pri vstavljanju znanih spr. v preostale stavke 2.')
-
-
-
-
-
-#####ODVEČ####               
-    
-        elif len(i.sez) == 1 and type(element(i.sez))== Spr:
-            stavki.remove(i)
-            print('preostali stavki=',stavki)
-            literal[element(i.sez).ime] = True
-           
-        elif len(i.sez) == 1 and type(element(i.sez))== Neg:
-            stavki.remove(i)
-            print('preostali stavki=',stavki)
-            literal[element(i.sez).izr.ime] = False
-#####ODVEČ####
-
             
 
         else:
@@ -596,12 +603,9 @@ def sat(izraz):
                 elif type(j) == Neg: literal[j.izr.ime] = ''                
                 else: print('NAPAKA!')
                 
-    #literal je slovar vseh spremenljivk, skupaj z očitnimi znanimi vrednostmi
+    
     znane = {i: literal[i] for i in literal if literal[i]!=''}
     neznane = {i: literal[i] for i in literal if literal[i]==''}
-    
-    
-
     
     return literal
 
