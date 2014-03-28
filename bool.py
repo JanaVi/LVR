@@ -386,31 +386,21 @@ a6=Spr('a6')
 
 
 
-def SATprimer(niz,n):
-    '''Funkcija sprejme niz:
-    enostavenIN
-    enostavenALI
-    povezanostJA1
-    povezanostJA2
-    enostavenJA
-    enostavenNE
-    in dolžino formule za enostavne primere.'''
-    if niz == 'enostavenIN':
-        return In(*tuple('a'+str(i) for i in range(n)))
-    elif niz == 'enostavenALI':
-        return Ali(*tuple('a'+str(i) for i in range(n)))
-    elif niz == 'povezanostJA1':
-        return povezanost({'a': {'b'},'b':{'a','c'},'c':{'b','d'},'d':{'c','e'},'e':{'d'}})
-    elif niz == 'povezanostJA2':
-        return povezanost({'a':{'b','c'},'b':{'a','e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
-    elif niz == 'povezanostNE1':
-        return povezanost({'a':{'c'},'b':{'e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
-    elif niz =='povezanostNE2':
-        return povezanost({'a':{'b'},'b':{'a'},'c':{'d'},'d':{'c'}})
-    elif niz == 'enostavenJA':
-        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a1))),a5)
-    elif niz == 'enostavenNE':
-        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a6))),a5)
+#### Testi
+enostavenIn = (*tuple('a'+str(i) for i in range(15)))
+enostavenALI = Ali(*tuple('a'+str(i) for i in range(15)))
+
+
+povezanostJA1 = povezanost({'a': {'b'},'b':{'a','c'},'c':{'b','d'},'d':{'c','e'},'e':{'d'}})
+povezanostJA2 = povezanost({'a':{'b','c'},'b':{'a','e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
+
+
+povezanostNE1 = povezanost({'a':{'c'},'b':{'e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
+povezanostNE2 = povezanost({'a':{'b'},'b':{'a'},'c':{'d'},'d':{'c'}})
+
+#Testi dolžine 9
+enostavenJA = Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a1))),a5)
+enostavenNE = Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a6))),a5)
     
     
   
