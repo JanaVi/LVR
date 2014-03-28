@@ -178,7 +178,7 @@ class In():
                     else: smiselni.add(j)                
             else: smiselni.add(i) #vsi ostali kompleksni izrazi
         a = In(*tuple(i for i in smiselni))
-        if len(a.sez) !=0: return a
+        if len(a.sez) !=0: return a.bistvo()
         else: return T()
 
     def poenostavi(self):
