@@ -312,18 +312,22 @@ class Ali():
 
         
         #distributivnost:############################################
-        #še v ozdelavi
         for i in range(1,n):
             if (type(nova) == Spr or type(nova) == Neg) and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
                 nova = Ali(nova,seznam[i]).bistvo()
 
-            elif (type(nova) == Spr or type(nova) == Neg) and type(seznam[i] == In):
-                
+            elif (type(nova) == Spr or type(nova) == Neg) and type(seznam[i]) == In:
+                sez=set()
+                mn={m for m in seznam[i].sez}
+                for m in mn:
+                    if type(m) == Spr or type(m) == Neg:
+                        sez.add(Ali(no))
                 nova = In(*tuple(Ali(nova,j).bistvo() for j in seznam[i].sez))
 
             elif (type(nova) == Ali and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
                 nova.sez.add(seznam[i])
                 
+            
 
             elif type(seznam[i]) == Spr or type(seznam[i]) == Neg:
                 nova = In(*tuple(Ali(k,seznam[i]).bistvo() for k in nova.sez))
@@ -400,217 +404,7 @@ class Ali():
 
 
 
-######################## Primeri za cnf ##########################################################################
-p = Spr("p")
-q = Spr("q")
-r = Spr("r")
 
-primer1 = Ali(p,In(q,p))
-
-primer2 = In(p,Ali(q,Neg(p)))
-
-primer3 = In(Ali(p,q),Ali(p,r))
-
-primer4 = In(In(p,q),In(q,r),In(r,p))
-
-primer5 = In(Ali(p,q),Ali(q,r),Ali(r,p),Neg(In(p,q)),Neg(In(q,r)),Neg(In(r,p)))
-
-primer6 = Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c')))
-
-primer7 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),F())
-
-primer8 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),Spr('K'))
-
-
-p1=In(T(),F(),Ali(p,Neg(p)))
-p2=Ali(Neg(In(p,r,q,)))
-p3=In(T(),In(p,Neg(p)))
-
-##################################### Primeri za SAT ############################################################
-a1=Spr('a1')
-a2=Spr('a2')
-a3=Spr('a3')
-a4=Spr('a4')
-a5=Spr('a5')
-a6=Spr('a6')
-
-
-
-def SATprimer(niz,n):
-    '''Funkcija sprejme niz:
-    enostavenIN
-    enostavenALI
-    povezanostJA1
-    povezanostJA2
-    enostavenJA
-    enostavenNE
-    in dolžino formule za enostavne primere.'''
-    if niz == 'enostavenIN':
-        return In(*tuple('a'+str(i) for i in range(n)))
-    elif niz == 'enostavenALI':
-        return Ali(*tuple('a'+str(i) for i in range(n)))
-    elif niz == 'povezanostJA1':
-        return povezanost({'a': {'b'},'b':{'a','c'},'c':{'b','d'},'d':{'c','e'},'e':{'d'}})
-    elif niz == 'povezanostJA2':
-        return povezanost({'a':{'b','c'},'b':{'a','e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
-    elif niz == 'povezanostNE1':
-        return povezanost({'a':{'c'},'b':{'e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
-    elif niz =='povezanostNE2':
-        return povezanost({'a':{'b'},'b':{'a'},'c':{'d'},'d':{'c'}})
-    elif niz == 'enostavenJA':
-        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a1))),a5)
-    elif niz == 'enostavenNE':
-        return Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a6))),a5)    
-
-
-###################### VAJE ŠTEVILKA 2, 3 ########################################################################
-
-
-def barvanje(g,k):
-    """Ali lahko graf podan s slovarjem g pobarvamo s k barvami? """
-    def sprem(v,b):
-        return Spr(str(v)+","+str(b))
-    
-    #vsako vozlišče vsaj ene barve
-    f1 = In(*tuple(Ali(*tuple(sprem(v,b) for b in range(k))) for v in g))
-
-    #vsako vozlišče z ne več kot eno barvo
-    f2 = In(
-        *tuple(
-            In(
-                *tuple(
-                    Neg(In(sprem(v,b1),sprem(v,b2)))
-                    for b1 in range(k-1)
-                    for b2 in range(b1+1,k))
-                )
-            for v in g))
-    
-    #povezani vozlišči različnih barv
-    f3 = In(
-        *tuple(
-            In(
-                *tuple(
-                    Neg(In(sprem(v1,b),sprem(v2,b)))
-                    for b in range(k)
-                    )
-                )
-            for v1 in g for v2 in g[v1]))
-
-    formula = In(f1,f2,f3)
-
-    return formula.poenostavi()
-
-g = {"a":{"d"},"b":{"d"},"c":{"d"},"d":{"a","b","c"}}
-
-
-def povezanost(g):
-    def sprem(u,v,n):
-        return Spr("C{0}{1}{2}".format(u,v,n))
-
-    n = len(g)
-
-    #sosedi so povezani
-    f1 = In(*tuple(sprem(u,v,1) if v in g[u] else Neg(sprem(u,v,1)) for u in g for v in g.keys()))
-
-    #povezanost
-    f3 = In(*tuple(Ali(*tuple(sprem(u,v,i) for i in range(1,n))) for u in g for v in g.keys()-{u}))
-
-    # če u in v povezana in iz v do k v n korakih, potem iz u do k v n+1 korakih
-    f2 = In(*tuple(Ali(Neg(sprem(v,k,i)),sprem(u,k,i+1)) for u in g for v in g[u] for k in g.keys()-{u,v} for i in range(1,n)))
-
-    # če iz u do v v n korakih, potem iz nekega soseda od u do v v n-1 korakih
-    f4 = In(
-        *tuple(
-            Ali(
-                *tuple(
-                    Ali(Neg(sprem(u,v,i)),sprem(k,v,i-1))
-                        for k in g[u] for i in range(2,n)
-                    )
-                )
-
-                for u in g for v in g.keys()-{u}
-
-            )
-        )
-    
-
-    return In(f1,f2,f3,f4)
-
-            
-############ SAT #############################
-
-def sat(izraz):
-    izraz = izraz.cnf() #sedaj je izraz v konjuktivni obliki
-    
-    if izraz == T(): return True
-    elif izraz == F(): return False
-    
-##    elif len(izraz.sez) == 0 and type(izraz) == In: return True #če ni stavkov
-##    elif len(izraz.sez) == 0 and type(izraz) == Ali: return False
-
-    print('cnf oblika=',izraz)
-    literal = dict() #slovar vseh spremenljivk, skupaj z očitnimi znanimi vrednostmi
-    stavki = [i for i in izraz.sez] #stavki, ki jih je še potrebno predelati
-    print('začetni stavki=',stavki)
-
-
-    #######tega se želimo znebiti že v cnf!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! zaenkrat notri zaradi pravilnosti
-    for i in izraz.sez: #če je kakšen stavek F()
-        if type(i) == F: return False
-
-        
-    for i in izraz.sez: 
-        if type(i) == Spr: #samostojna spremenljivka
-            stavki.remove(i)
-            print('preostali stavki=',stavki)
-            literal[i.ime] = True
-            stavki2=stavki #nadomestna kopija preostalih stavkov
-            
-            for stavek in stavki2:
-                if type(stavek) == Spr and stavek==i: stavki.remove(stavek)
-                elif type(stavek) == Neg and stavek.izr==i: return False
-                elif type(stavek) == Ali and len(stavek.sez)>1:
-                    for lit in stavek.sez:
-                        if type(lit) == Spr and lit == i:
-                            stavki.remove(stavek)
-                        if type(lit) == Neg and lit.izr == i:
-                            stavki.remove(stavek)
-                            stavki.append(Ali(*tuple(a for a in stavek if a!=Neg(i)))) #odstrani stari stavek in ga nadomesti z novim, ki nima negacij naše spremenljivke  
-                else: print('Napaka pri vstavljanju znanih spr. v preostale stavke 1.')
-                
-            
-        elif type(i) == Neg: #samostojna negirana spremenljivka
-            stavki.remove(i)
-            print('preostali stavki=',stavki)
-            literal[i.izr.ime] = False
-            stavki2=stavki #nadomestna kopija preostalih stavkov
-            
-            for stavek in stavki2:
-                if type(stavek) == Spr and stavek==i.izr: return False                
-                elif type(stavek) == Neg and stavek.izr==i.izr: stavki.remove(stavek)
-
-                
-                elif type(stavek) == Ali and len(stavek.sez)>1:
-                    for lit in stavek.sez:
-                        if type(lit) == Spr and lit == i.izr:
-                            stavki.remove(stavek)
-                            stavki.append(Ali(*tuple(a for a in stavek if a!=i.izr))) #odstrani stari stavek in ga nadomesti z novim, ki nima negacij naše spremenljivke  
-                        if type(lit) == Neg and lit.izr == i.izr:
-                            stavki.remove(stavek)
-                else: print('Napaka pri vstavljanju znanih spr. v preostale stavke 2.')
-            
-
-        else:
-            for j in i.sez:
-                if type(j) == Spr: literal[j.ime] = ''
-                elif type(j) == Neg: literal[j.izr.ime] = ''                
-                else: print('NAPAKA!')
-                
-    
-    znane = {i: literal[i] for i in literal if literal[i]!=''}
-    neznane = {i: literal[i] for i in literal if literal[i]==''}
-    
-    return literal
 
 
 def element(s): #vrne edini element v množici in ga pusti notri
