@@ -28,7 +28,7 @@ a6=Spr('a6')
 
 
 #### Testi
-enostavenIn = (*tuple('a'+str(i) for i in range(15)))
+enostavenIn = In(*tuple('a'+str(i) for i in range(15)))
 enostavenALI = Ali(*tuple('a'+str(i) for i in range(15)))
 
 

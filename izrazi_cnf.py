@@ -306,39 +306,93 @@ class Ali():
         n = len(seznam)
         nova = seznam[0] #do sedaj že narejen izraz, postopoma distributiramo
 
-
-
-
-
-        
-        #distributivnost:############################################
+        #distributivnost:############################################katastrofa!!!!!!!!!!!!!!!!!!!!ampak deluje
         for i in range(1,n):
             if (type(nova) == Spr or type(nova) == Neg) and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
+                print('konec1')
                 nova = Ali(nova,seznam[i]).bistvo()
-
             elif (type(nova) == Spr or type(nova) == Neg) and type(seznam[i]) == In:
+                print('konec2')
                 sez=set()
                 mn={m for m in seznam[i].sez}
                 for m in mn:
                     if type(m) == Spr or type(m) == Neg:
-                        sez.add(Ali(no))
-                nova = In(*tuple(Ali(nova,j).bistvo() for j in seznam[i].sez))
+                        sez.add(Ali(nova,m).bistvo())
+                    elif type(m) == Ali:
+                        for s in m:
+                            sez.add(Ali(nova,s).bistvo())
+                    else: print('napaka pri distr.!')
+                nova = In(*tuple(k for k in sez))
+            elif type(seznam[i]) == Ali and (type(nova) == Spr or type(nova) == Neg):
+                print('konec3')
+                nova.sez.add(k for k in seznam[i].sez)
 
-            elif (type(nova) == Ali and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
+
+            elif type(nova) == Ali and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
+                print('konec4')
                 nova.sez.add(seznam[i])
-                
-            
+            elif type(nova) == Ali and type(seznam[i]) == Ali:
+                print('konec5')
+                nova.sez.add(k for k in seznam[i].sez)
+            elif type(nova) == Ali: #seznam[i] je tipa In
+                print('konec6')
+                nova_sez = [k for k in nova.sez]
+                sez=set()
+                mn={m for m in seznam[i].sez}
+                for m in mn:
+                    zacasen_seznam = nova_sez
+                    if type(m) == Spr or type(m) == Neg:
+                          zacasen_seznam.append(m)
+                          sez.add(Ali(*tuple(k for k in zacasen_seznam)).bistvo())
+                    elif type(m) == Ali:
+                        for s in m:
+                              zacasen_seznam.append(s)
+                        sez.add(Ali(*tuple(k for k in zacasen_seznam)).bistvo())
+                    else: print('napaka pri distr.!')
+                nova = In(*tuple(k for k in sez))
 
-            elif type(seznam[i]) == Spr or type(seznam[i]) == Neg:
-                nova = In(*tuple(Ali(k,seznam[i]).bistvo() for k in nova.sez))
                 
-            else: nova = In(*tuple(Ali(k,j).bistvo() for j in seznam[i].sez for k in nova.sez))
+            elif (type(seznam[i]) == Spr or type(seznam[i]) == Neg) and type(nova) == In:
+                print('konec7')
+                sez=set()
+                mn={m for m in nova.sez}
+                for m in mn:
+                    if type(m) == Spr or type(m) == Neg:
+                        sez.add(Ali(seznam[i],m).bistvo())
+                    elif type(m) == Ali:
+                        for s in m:
+                            sez.add(Ali(seznam[i],s).bistvo())
+                    else: print('napaka pri distr.! 2')
+                nova = In(*tuple(k for k in sez))              
+            elif type(nova) == In and type(seznam[i]) == Ali:
+                print('konec8')
+                nova_sez = [k for k in seznam[i].sez]
+                sez=set()
+                mn={m for m in nova.sez}
+                for m in mn:
+                    zacasen_seznam = nova_sez
+                    if type(m) == Spr or type(m) == Neg:
+                          zacasen_seznam.append(m)
+                          sez.add(Ali(*tuple(k for k in zacasen_seznam)).bistvo())
+                    elif type(m) == Ali:
+                        for s in m:
+                              zacasen_seznam.append(s)
+                        sez.add(Ali(*tuple(k for k in zacasen_seznam)).bistvo())
+                    else: print('napaka pri distr.!')
+                nova = In(*tuple(k for k in sez))               
+            else: #In ali In
+                print('konec9')
+                sez = set()
+                for m in nova.sez:
+                   for n in seznam[i].sez:
+                      zacasen = []
+                      zacasen.append(k for k in m.sez) if type(m) == Ali else zacasen.append(m)
+                      zacasen.append(k for k in n.sez) if type(n) == Ali else zacasen.append(n)
+                      print(zacasen)
+                      sez.add(Ali(*tuple(k for k in zacasen))) 
+                nova = In(*tuple(k for k in sez))
+                
         return nova.bistvo()
-
-
-
-
-
 
 
     def poenostavi(self):
@@ -403,8 +457,28 @@ class Ali():
         return Ali(*tuple(mn))
 
 
+######################## Primeri za cnf ##########################################################################
+p = Spr("p")
+q = Spr("q")
+r = Spr("r")
 
+primer1 = Ali(p,In(q,p))
 
+primer2 = In(p,Ali(q,Neg(p)))
+
+primer3 = In(Ali(p,q),Ali(p,r))
+
+primer4 = In(In(p,q),In(q,r),In(r,p))
+
+primer5 = In(Ali(p,q),Ali(q,r),Ali(r,p),Neg(In(p,q)),Neg(In(q,r)),Neg(In(r,p)))
+
+primer6 = Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c')))
+
+primer7 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),Spr('K'))
+
+p1=In(T(),F(),Ali(p,Neg(p)))
+p2=Ali(Neg(In(p,r,q,)))
+p3=In(T(),In(p,Neg(p)))
 
 
 def element(s): #vrne edini element v množici in ga pusti notri
