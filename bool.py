@@ -312,15 +312,18 @@ class Ali():
 
         
         #distributivnost:############################################
+        #še v ozdelavi
         for i in range(1,n):
             if (type(nova) == Spr or type(nova) == Neg) and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
                 nova = Ali(nova,seznam[i]).bistvo()
 
+            elif (type(nova) == Spr or type(nova) == Neg) and type(seznam[i] == In):
+                
+                nova = In(*tuple(Ali(nova,j).bistvo() for j in seznam[i].sez))
+
             elif (type(nova) == Ali and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
                 nova.sez.add(seznam[i])
                 
-            elif type(nova) == Spr or type(nova) == Neg:
-                nova = In(*tuple(Ali(nova,j).bistvo() for j in seznam[i].sez))
 
             elif type(seznam[i]) == Spr or type(seznam[i]) == Neg:
                 nova = In(*tuple(Ali(k,seznam[i]).bistvo() for k in nova.sez))
