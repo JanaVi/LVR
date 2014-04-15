@@ -309,10 +309,8 @@ class Ali():
         #distributivnost:############################################katastrofa!!!!!!!!!!!!!!!!!!!!ampak deluje
         for i in range(1,n):
             if (type(nova) == Spr or type(nova) == Neg) and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
-                print('konec1')
                 nova = Ali(nova,seznam[i]).bistvo()
             elif (type(nova) == Spr or type(nova) == Neg) and type(seznam[i]) == In:
-                print('konec2')
                 sez=set()
                 mn={m for m in seznam[i].sez}
                 for m in mn:
@@ -324,18 +322,14 @@ class Ali():
                     else: print('napaka pri distr.!')
                 nova = In(*tuple(k for k in sez))
             elif type(seznam[i]) == Ali and (type(nova) == Spr or type(nova) == Neg):
-                print('konec3')
                 nova.sez.add(k for k in seznam[i].sez)
 
 
             elif type(nova) == Ali and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
-                print('konec4')
                 nova.sez.add(seznam[i])
             elif type(nova) == Ali and type(seznam[i]) == Ali:
-                print('konec5')
                 nova.sez.add(k for k in seznam[i].sez)
             elif type(nova) == Ali: #seznam[i] je tipa In
-                print('konec6')
                 nova_sez = [k for k in nova.sez]
                 sez=set()
                 mn={m for m in seznam[i].sez}
@@ -353,7 +347,6 @@ class Ali():
 
                 
             elif (type(seznam[i]) == Spr or type(seznam[i]) == Neg) and type(nova) == In:
-                print('konec7')
                 sez=set()
                 mn={m for m in nova.sez}
                 for m in mn:
@@ -365,7 +358,6 @@ class Ali():
                     else: print('napaka pri distr.! 2')
                 nova = In(*tuple(k for k in sez))              
             elif type(nova) == In and type(seznam[i]) == Ali:
-                print('konec8')
                 nova_sez = [k for k in seznam[i].sez]
                 sez=set()
                 mn={m for m in nova.sez}
@@ -381,14 +373,12 @@ class Ali():
                     else: print('napaka pri distr.!')
                 nova = In(*tuple(k for k in sez))               
             else: #In ali In
-                print('konec9')
                 sez = set()
                 for m in nova.sez:
                    for n in seznam[i].sez:
                       zacasen = []
                       zacasen.append(k for k in m.sez) if type(m) == Ali else zacasen.append(m)
                       zacasen.append(k for k in n.sez) if type(n) == Ali else zacasen.append(n)
-                      print(zacasen)
                       sez.add(Ali(*tuple(k for k in zacasen))) 
                 nova = In(*tuple(k for k in sez))
                 
