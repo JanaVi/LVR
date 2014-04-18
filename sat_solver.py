@@ -144,7 +144,7 @@ def pomo(stavki, literal):
                 literal = dict(literal_prej)
                 neznane = dict(neznane_prej)
             else:
-                print('Primer ni rešljiv.')
+                print('Primer ni rešljiv pri tako nastavljenih spremenljivkah.')
                 return F()
         elif type(vmes) == T:
             print(literal)
