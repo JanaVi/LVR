@@ -15,12 +15,12 @@ Boolovo formulo    (x ∧ y) ∨ x ∨ False    zapišemo kot:  Ali(In(Spr('x'),
 
 * V datoteki *izrazi_cnf.py* se nahajajo definicije teh logičnih objektov, kot tudi prevedba boolovega izraza na [cnf obliko](http://en.wikipedia.org/wiki/Conjunctive_normal_form).
 * *sudoku.py* prevede problem za dani sudoku v boolovo formulo.
-* *povezanost_barvanje.py* prevede problem za dani graf v boolovo formulo.
+* *povezanost_barvanje.py* prevede problem za dani graf v boolovo formulo. Graf naj bo predstavljen s slovarjem {vozlišče: {sosedi}, vozlišče: {sosedi}, ...}
 * *sat_solver.py* vsebuje kodo dpll
 
 ## Uporaba
 
 * Za zagon testnih primerov, poženi datoteko ..... !!!!
-* Za generiranje naključnega primera kliči funkcijo generator_primerov
+* Za generiranje naključnega primera kliči funkcijo generator_primerov(max število spremenljivk, dolžina formule).
 * Za zagon drugih primerov poženi datoteko *sat_solver.py* in v IDLE kliči sat('moj_primer').
 Formula mora biti v cnf obliki. Če ni, jo v cnf obliko prevedemo s klicem 'moj_primer'.cnf()
