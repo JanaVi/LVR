@@ -1,7 +1,7 @@
 # **Projekt: SAT solver**
 ###Ekipa: -- .- ..-. .. .--- .- 
 
-###### Članice: *Barbara Bajcer* in *Jana Vidrih*  :two_women_holding_hands:
+###### Članici: *Barbara Bajcer* in *Jana Vidrih*  :two_women_holding_hands:
 
 
 Projekt je sestavljen iz:
@@ -23,4 +23,3 @@ Boolovo formulo    (x ∧ y) ∨ x ∨ False    zapišemo kot:  Ali(In(Spr('x'),
 * Za zagon testnih primerov, poženi datoteko ..... !!!!
 * Za generiranje naključnega primera kliči funkcijo generator_primerov(max število spremenljivk, dolžina formule).
 * Za zagon drugih primerov poženi datoteko *sat_solver.py* in v IDLE kliči sat('moj_primer').
-Formula mora biti v cnf obliki. Če ni, jo v cnf obliko prevedemo s klicem 'moj_primer'.cnf()
