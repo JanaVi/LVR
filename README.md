@@ -16,7 +16,7 @@ Boolovo formulo    (x ∧ y) ∨ x ∨ False    zapišemo kot:  Ali(In(Spr('x'),
 * V datoteki *izrazi_cnf.py* se nahajajo definicije teh logičnih objektov, kot tudi prevedba boolovega izraza na [cnf obliko](http://en.wikipedia.org/wiki/Conjunctive_normal_form).
 * *sudoku.py* prevede problem za dani sudoku v boolovo formulo.
 * *povezanost_barvanje.py* prevede problem za dani graf v boolovo formulo. Graf naj bo predstavljen s slovarjem {vozlišče: {sosedi}, vozlišče: {sosedi}, ...}
-* *sat_solver.py* vsebuje kodo dpll
+* *sat_solver.py* vsebuje kodo [dpll](http://www.dis.uniroma1.it/~liberato/ar/dpll/dpll.html) algoritma 
 
 ## Uporaba
 
