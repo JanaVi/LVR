@@ -1,4 +1,5 @@
 from izrazi_cnf import *
+from primeri import *
 
 ############ SAT #############################
 
@@ -206,15 +207,3 @@ def neznani_literali(stavki):
             
 def element(s): #vrne edini element v množici in ga pusti notri
     return list(s)[0]
-
-p=Spr('p')
-r=Spr('r')
-q=Spr('q')
-a=Spr('a')
-b=Spr('b')
-c=Spr('c')
-d=Spr('d')
-e=Spr('e')
-f=Spr('f')
-primer8 = In(Ali(Neg(a),b,Neg(c),e,Neg(f)),Ali(Neg(a),e,d),Ali(e,f,c,Neg(p),Neg(r)),Ali(q,b,f))
-primer9 = In(Ali(a,b,c),Ali(Neg(a),Neg(b)),c)

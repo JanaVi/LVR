@@ -20,6 +20,7 @@ class T():
     def cnf(self):
         return self
 
+
 ###################################################
 class F():
     def __init__(self):
@@ -42,6 +43,7 @@ class F():
 
     def cnf(self):
         return self
+
 
 ###################################################
 class Spr():
@@ -68,8 +70,9 @@ class Spr():
 
     def cnf(self):
         return self
+
     
-######################################################
+###################################################
 class Neg():
     def __init__(self,izr):
         self.izr = izr
@@ -124,7 +127,8 @@ class Neg():
         elif tip == Ali:
             return In(*tuple(Neg(i) for i in a.sez)).cnf()
 
-#####################################################
+
+###################################################
 class In():
     def __init__(self,*args):
         self.sez=set(args)
@@ -243,7 +247,7 @@ class In():
         return In(*tuple(mn))
     
         
-########################################################
+###################################################
 class Ali():
     def __init__(self,*args):
         self.sez=set(args)
@@ -445,31 +449,3 @@ class Ali():
         for i in slo.values():
             mn|=i
         return Ali(*tuple(mn))
-
-
-######################## Primeri za cnf ##########################################################################
-p = Spr("p")
-q = Spr("q")
-r = Spr("r")
-
-primer1 = Ali(p,In(q,p))
-
-primer2 = In(p,Ali(q,Neg(p)))
-
-primer3 = In(Ali(p,q),Ali(p,r))
-
-primer4 = In(In(p,q),In(q,r),In(r,p))
-
-primer5 = In(Ali(p,q),Ali(q,r),Ali(r,p),Neg(In(p,q)),Neg(In(q,r)),Neg(In(r,p)))
-
-primer6 = Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c')))
-
-primer7 = In(Ali(In(Spr('p'),Spr('r'),Spr('q')),In(Spr('a'),Spr('b'),Spr('c'))),Spr('K'))
-
-p1=In(T(),F(),Ali(p,Neg(p)))
-p2=Ali(Neg(In(p,r,q,)))
-p3=In(T(),In(p,Neg(p)))
-
-
-def element(s): #vrne edini element v množici in ga pusti notri
-    return list(s)[0]

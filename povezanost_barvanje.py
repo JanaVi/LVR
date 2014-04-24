@@ -1,5 +1,6 @@
-###################### VAJE ŠTEVILKA 2, 3 ########################################################################
+from izrazi_cnf import *
 
+###################### VAJE ŠTEVILKA 2, 3 ########################################################################
 
 def barvanje(g,k):
     """Ali lahko graf podan s slovarjem g pobarvamo s k barvami? """
