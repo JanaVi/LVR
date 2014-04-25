@@ -15,7 +15,7 @@ Projekt je sestavljen iz:
 * *izrazi_cnf.py*: V tej datoteki se nahajajo tako definicije razredov logičnih operacij, kot tudi prevedba boolovega izraza na [cnf obliko](http://en.wikipedia.org/wiki/Conjunctive_normal_form).
 
 Primer uporabe:
-Boolovo formulo    **(x ∧ y) ∨ ~x ∨ ⊥**   zapišemo kot:  Ali(In(Spr('x'),Spr('y')),Neg(Spr('x')),F()).
+Boolovo formulo    **(x ∧ y) ∨ ~x ∨ ⊥**   zapišemo kot:  Ali ( In ( Spr('x'), Spr('y') ), Neg(Spr('x') ), F() ).
 
 * *sudoku.py*: Prevedba problema za dani sudoku v boolovo formulo.
 * *povezanost.py* in *barvanje.py*: Prevedba problema za dani graf v boolovo formulo. Graf naj bo predstavljen s slovarjem {vozlišče: {sosedi}, vozlišče: {sosedi}, ...}.
