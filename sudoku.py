@@ -63,7 +63,7 @@ def sudoku_matrika(slovar):
     '''Sprejme slovar s ključi (i,j,k) in vrednostmi ⊤ in ⊥. Ključ (i,j,k) z vrednostjo ⊤ pove,
     da se v kvadratku (i,j) nahaja število k. Funkcija vrne rešitev sudokuja v obliki matrike.'''
 
-    if type(slovar) == str: return 'Sudoku s tako podanimi začetnimi vrednostmi ni rešljiv.'
+    if type(slovar) == str: return 'Sudoku s tako podanimi začetnimi vrednostmi ni rešljiv.' ################popravi za že rešen sudoku
     
     pom = dict()
     for k in slovar.keys():

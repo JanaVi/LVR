@@ -6,14 +6,12 @@ from sudoku import *
 
 def sat(izraz):
     izraz = izraz.cnf() #sedaj je izraz v konjuktivni obliki
-##    print('začetna cnf oblika=',izraz)
+##    print('začetna cnf oblika=', izraz)
     
-    if izraz == T():
-        print('???')
-        return T()
+    if izraz == T(): return T()
     elif izraz == F(): return F()
 
-    literal = dict() #slovar vseh spremenljivk, skupaj z očitnimi znanimi vrednostmi
+    literal = dict() #slovar spremenljivk, skupaj z že določenimi vrednostmi
     stavki = [i for i in izraz.sez] #stavki, ki jih je še potrebno predelati
 
     rezultat = pomo(stavki, literal)
@@ -25,27 +23,15 @@ def sat(izraz):
     
 
 def pomo(stavki, literal):
-    '''dobi stavke iz cnf oblike in slovar že znanih spr.
-       vrne ali seznam možnih vrednosti spremenljivk ali F() ali T()'''
+    '''Dobi stavke v cnf obliki in slovar že znanih spremenljivk.
+       Vrne ali slovar možnih vrednosti spremenljivk ali F() ali T().'''
     
     if len(stavki) == 0: return T()
     
-    izraz = In(*tuple(i for i in stavki)).cnf() ####nepotrebno
-    
-    if izraz == T(): return T() ####nepotrebno
-    elif izraz == F(): return F() ####nepotrebno
-    
-##    print('literal=', literal)
-##    print('začetni stavki=',stavki)
-##    print('\n')
-    
     while stavki:
         stavki = list(uredi_po_dolzini(stavki))
-        i = stavki[0]
-##        print('while zanka',i)
-        if not (type(i) == Spr or type(i) == Neg):
-##            print('sami sestavljeni stavki')
-            break #če več nimamo samostojnih spr. med stavki
+        i = stavki[0] #pogleda najkrajši stavek
+        if not (type(i) == Spr or type(i) == Neg): break #če več nimamo samostojnih spr. med stavki
         
         if type(i) == Spr: #samostojna spremenljivka
             stavki.remove(i)
@@ -82,49 +68,31 @@ def pomo(stavki, literal):
                             stavki.remove(stavek)
                 else: pass    
 
-        else: #############sestavljen stavek, do tega nikoli ne pride!!!!
-            for j in i.sez:
-                if type(j) == Spr and j.ime not in literal:
-                    literal[j.ime] = ''
-                elif type(j) == Neg and j.izr.ime not in literal:
-                    literal[j.izr.ime] = ''
-##                    
-##        print('stavki na koncu zanke=',stavki)
-##
-##    print('\n')
-##    print('stavki, ki so ostali',stavki)
+##        else: #sestavljen stavek, po novem do tega nikoli ne pride!!!!
+##            for j in i.sez:
+##                if type(j) == Spr and j.ime not in literal:
+##                    literal[j.ime] = ''
+##                elif type(j) == Neg and j.izr.ime not in literal:
+##                    literal[j.izr.ime] = ''
+                   
     neznane = uredi_po_frekvenci(stavki) 
     
-    # imamo stavke (ki so vsi sestavljeni!), literale in neznane (ki so še v stavkih), skupaj z njihovimi frekvencami
-##    print('konec poma, tik pred zanko = ', stavki, literal, neznane)
-##    print('\n')
+    # sedaj imamo preostale stavke (če kakšen obstaja, je sigurno sestavljen!), že določene literale in neznane spr. (ki so še v stavkih), skupaj z njihovimi frekvencami
     
-    if not stavki:
-##        print(literal)
-##        print('1?','\n')
-        return literal #ni več stavkov, imamo vse potrebne vrednosti za naše spremenljivke
-
+    if not stavki: return literal #ni več stavkov, imamo vse potrebne vrednosti za naše spremenljivke
     
     for i in [F(),T()]:
         stavki_prej = list(stavki)
         literal_prej = dict(literal)
         neznane_prej = dict(neznane)
         
-##        print('.')
-##        print('.')
-##        print('.')
-##        print('neznane=',neznane)
-##        print('literal=',literal)
         trenutna = max(neznane, key=neznane.get)
-##        print('trenutna=', trenutna, i)
         literal[trenutna] = i
         
         #gremo po vseh stavkih in vstavljamo vrednost za našo trenutno spr.
         stavki2 = list(stavki)
-##        print('stavek2=', stavki2)
-##        print('\n')
+
         for stavek in stavki2:
-##            print('stavek=', stavek)
             if trenutna in stavek.sez:
                 if literal[trenutna] == T():
                     stavki.remove(stavek)
@@ -139,12 +107,6 @@ def pomo(stavki, literal):
                     stavki.append(Ali(*tuple(a for a in stavek.sez if a!=Neg(trenutna))).bistvo())
             else: continue
 
-##        print('\n')
-##        print('pred rekurzijo:', stavki, literal)
-##        print('.')
-##        print('.')
-##        print('.')
-##        print('\n')
         vmes = pomo(stavki, literal)
         
         if type(vmes) == F:
@@ -152,21 +114,13 @@ def pomo(stavki, literal):
                 stavki = list(stavki_prej)
                 literal = dict(literal_prej)
                 neznane = dict(neznane_prej)
-            else:
-##                print('Primer ni rešljiv pri tako nastavljenih spremenljivkah.')
-                return F()
-        elif type(vmes) == T:
-##            print(literal)
-##            print('2?','\n')
-            return literal
-        else:
-##            print(literal)
-##            print('3?','\n')
-            return literal
+            else: return F()
+        elif type(vmes) == T: return literal
+        else: return literal
 
 
 def uredi_po_frekvenci(stavki):
-    '''sprejme stavke in vrne spremenljivke v slovarju, urejene po frekvenci'''
+    '''Sprejme stavke in vrne spremenljivke v slovarju, urejene po frekvenci.'''
     
     slovar = dict()
     for stavek in stavki:
@@ -177,12 +131,12 @@ def uredi_po_frekvenci(stavki):
             elif type(i) == Neg:
                 if i.izr not in slovar: slovar[i.izr] = 1
                 else: slovar[i.izr]+=1
-            else: print('Napaka pri uredi_po_frekvenci')
+            else: print('Napaka pri: uredi_po_frekvenci') #lovimo napake
     return slovar         
 
 
 def uredi_po_dolzini(stavki):
-    '''sprejme stavke in vrne seznam stavkov, urejenih po dolžini (torej številu spremenljivk)'''
+    '''Sprejme stavke in vrne seznam stavkov, urejenih po dolžini (torej številu spremenljivk).'''
     
     slovar = dict()
     seznam = []
@@ -206,7 +160,7 @@ def uredi_po_dolzini(stavki):
 
 
 def neznani_literali(stavki):
-    '''sprejme preostale stavke v izrazu in vrne množico literalov iz stavkov'''
+    '''Sprejme preostale stavke v izrazu in vrne množico literalov iz stavkov.'''
     
     if not stavki: return set()
     mn=set()
@@ -214,11 +168,11 @@ def neznani_literali(stavki):
         if type(stavek) == Spr: mn.add(stavek.ime)
         elif type(stavek) == Neg: mn.add(stavek.izr.ime)
         elif type(stavek) == Ali: mn = mn.union(stavek.sez)
-        else: print('napaka pri nezanani_literali')
+        else: print('Napaka pri: nezanani_literali') #lovimo napake
     return mn
 
             
 def element(s):
-    '''vrne edini element v množici in ga pusti notri'''
+    '''Vrne edini element v množici in ga pusti notri.'''
     
     return list(s)[0]
