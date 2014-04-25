@@ -20,6 +20,9 @@ class T():
     def cnf(self):
         return self
 
+    def bistvo(self):
+        return self
+
 
 ###################################################
 class F():
@@ -42,6 +45,9 @@ class F():
         return self
 
     def cnf(self):
+        return self
+
+    def bistvo(self):
         return self
 
 
@@ -69,6 +75,9 @@ class Spr():
         return self
 
     def cnf(self):
+        return self
+
+    def bistvo(self):
         return self
 
     
@@ -126,6 +135,9 @@ class Neg():
             return Ali(*tuple(Neg(i) for i in a.sez)).cnf()
         elif tip == Ali:
             return In(*tuple(Neg(i) for i in a.sez)).cnf()
+
+    def bistvo(self):
+        return self
 
 
 ###################################################

@@ -1,5 +1,6 @@
 from izrazi_cnf import *
-from povezanost_barvanje import *
+from povezanost import *
+from barvanje import *
 
 ######################## Primeri za cnf, SAT ##########################################################################
 
