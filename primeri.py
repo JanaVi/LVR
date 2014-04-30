@@ -1,8 +1,7 @@
 from izrazi_cnf import *
-from povezanost import *
-from barvanje import *
+from sat import *
 
-######################## Primeri za cnf, SAT ##########################################################################
+#################### Testi za cnf, SAT ####################
 
 p = Spr('p')
 r = Spr('r')
@@ -14,41 +13,21 @@ d = Spr('d')
 e = Spr('e')
 f = Spr('f')
 
-primer1 = Ali(p,In(q,p))
-primer2 = In(p,Ali(q,Neg(p)))
-primer3 = In(Ali(p,q),Ali(p,r))
-primer4 = In(In(p,q),In(q,r),In(r,p))
-primer5 = In(Ali(p,q),Ali(q,r),Ali(r,p),Neg(In(p,q)),Neg(In(q,r)),Neg(In(r,p)))
-primer6 = Ali(In(Spr(p),Spr(r),Spr(q)),In(Spr(a),Spr(b),Spr(c)))
-primer7 = In(Ali(In(Spr(p),Spr(r),Spr(q)),In(Spr(a),Spr(b),Spr(c))),Spr(f))
-primer8 = In(Ali(Neg(a),b,Neg(c),e,Neg(f)),Ali(Neg(a),e,d),Ali(e,f,c,Neg(p),Neg(r)),Ali(q,b,f))
-primer9 = In(Ali(a,b,c),Ali(Neg(a),Neg(b)),c)
+p1, p1_cnf = Ali(a), a
+p2, p2_cnf = In(a,Neg(a)), F()
+p3, p3_cnf = Ali(a,Neg(a)), T()
+p4, p4_cnf = In(T(),F(),Ali(p,Neg(p))), F()
+p5, p5_cnf = Ali(Neg(In(p,r,q))), Ali(Neg(r),Neg(p),Neg(q))
+p6, p6_cnf = In(T(),In(p,Neg(p))), F()
+p7, p7_cnf = In(a), a
+p8, p8_cnf = Ali(p,In(q,p)), In(p,Ali(p,q))
+p9, p9_cnf = In(p,Ali(q,Neg(p))), In(p,Ali(q,Neg(p)))
+p10, p10_cnf = Ali(Ali(a)), a
+p11, p11_cnf = Ali(Ali(a,b),In(Neg(a),b)), Ali(a,b) 
+p12, p12_cnf = In(Ali(p,q),Ali(p,r)), In(Ali(p,q),Ali(p,r))
+p13, p13_cnf = In(In(p,q),In(q,r),In(r,p)), In(p,q,r)
+p14, p14_cnf = Ali(In(p,q),In(a,b,Neg(p))), In(Ali(a,p),Ali(a,q),Ali(b,p),Ali(b,q),Ali(Neg(p),q))
+p15, p15_cnf = In(Ali(In(p,r),In(a,b)),f), In(f, Ali(a,p),Ali(a,r),Ali(b,p),Ali(b,r))
 
+primer16 = Ali(In(a,Ali(Ali(b,d),In(e,f))),In(c,Ali(d,a)),e)
 
-p1=In(T(),F(),Ali(p,Neg(p)))
-p2=Ali(Neg(In(p,r,q,)))
-p3=In(T(),In(p,Neg(p)))
-
-
-a1 = Spr('a1')
-a2 = Spr('a2')
-a3 = Spr('a3')
-a4 = Spr('a4')
-a5 = Spr('a5')
-a6 = Spr('a6')
-
-#### Testi
-enostavenIn = In(*tuple('a'+str(i) for i in range(15)))
-enostavenALI = Ali(*tuple('a'+str(i) for i in range(15)))
-
-
-povezanostJA1 = povezanost({'a': {'b'},'b':{'a','c'},'c':{'b','d'},'d':{'c','e'},'e':{'d'}})
-povezanostJA2 = povezanost({'a':{'b','c'},'b':{'a','e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
-
-
-povezanostNE1 = povezanost({'a':{'c'},'b':{'e','f'},'c':{'a','d'},'d':{'c'},'e':{'b'},'f':{'b'}})
-povezanostNE2 = povezanost({'a':{'b'},'b':{'a'},'c':{'d'},'d':{'c'}})
-
-#Testi dolžine 9
-enostavenJA = Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a1))),a5)
-enostavenNE = Ali(In(a1,(Ali(Ali(a2,a4),In(a5,a6)))),(In(a3,Ali(a4,a6))),a5)

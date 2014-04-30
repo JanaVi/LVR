@@ -1,3 +1,5 @@
+import copy
+
 class T():
     def __init__(self):
         pass
@@ -167,14 +169,21 @@ class In():
     def vrednost(self,slo):
         a=True
         for i in self.sez:
-            a= a and i.vrednost(slo)
+            a = a and i.vrednost(slo)
             if a==False:
                 return a
         return a
 
-    def bistvo(self): #In(Spr(p)) spremeni v Spr(p)
-        if len(self.sez) == 1: return self.sez.pop()
-        else: return self
+    def bistvo(self): #In(Spr(p)) spremeni v Spr(p); In(a,..,Neg(a)) spremeni v F(); 
+        if len(self.sez)==0: return T()
+        vsebina = set()
+        for i in self.sez:
+            if type(i) == F: return F()
+            elif type(i) == T: pass
+            elif (type(i) == Spr and Neg(i) in vsebina) or (type(i) == Neg and i.izr in vsebina): return F()
+            else: vsebina.add(i)
+        if len(vsebina) == 1: return vsebina.pop()
+        else: return In(*tuple(i for i in vsebina))
 
     def cnf(self):
         if len(self.sez)==0: return T()
@@ -194,8 +203,7 @@ class In():
                     else: smiselni.add(j)                
             else: smiselni.add(i) #vsi ostali kompleksni izrazi
         a = In(*tuple(i for i in smiselni))
-        if len(a.sez) !=0: return a.bistvo()
-        else: return T()
+        return a.bistvo()
 
     def poenostavi(self):
         if len(self.sez)==0: return T()
@@ -292,8 +300,16 @@ class Ali():
         return a
 
     def bistvo(self):
-        if len(self.sez) == 1: return self.sez.pop()
-        else: return self
+        if len(self.sez)==0: return F()
+        vsebina = set()
+        for i in self.sez:
+            if type(i) == F: pass
+            elif type(i) == T: return T()
+            elif type(i) == Spr and Neg(i) in vsebina: return T()
+            elif type(i) == Neg and i.izr in vsebina: return T()
+            elif type(i) == Spr or type(i) == Neg: vsebina.add(i)
+        if len(vsebina) == 1: return vsebina.pop()
+        else: return Ali(*tuple(i for i in vsebina))
 
     def cnf(self):
         if len(self.sez)==0: return F()
@@ -305,98 +321,106 @@ class Ali():
             i = i.cnf()
             if type(i) == F: pass
             elif type(i) == T: return T()
-            elif type(i) == Spr and Neg(i) in smiselni: smiselni.remove(Neg(i))
-            elif type(i) == Neg and i.izr in smiselni: smiselni.remove(i.izr)
+            elif type(i) == Spr and Neg(i) in smiselni: return T()
+            elif type(i) == Neg and i.izr in smiselni: return T()
             elif type(i) == Spr or type(i) == Neg: smiselni.add(i)
             elif type(i) == Ali: #če imaš Ali v Ali, ju združi
                 for j in i.sez:
-                    if type(j) == Spr and Neg(j) in smiselni: smiselni.remove(Neg(j))
-                    elif type(j) == Neg and j.izr in smiselni: smiselni.remove(j.izr)
+                    if type(j) == Spr and Neg(j) in smiselni: return T()
+                    elif type(j) == Neg and j.izr in smiselni: return T()
                     else: smiselni.add(j)                
             else: smiselni.add(i) #vsi ostali kompleksni izrazi
-        a = Ali(*tuple(i for i in smiselni))
-        
-        if len(a.sez) == 0: return F()
 
-        seznam = [i for i in a.sez]
+        if len(smiselni) == 0: return F()
+        elif len(smiselni) == 1: return smiselni.pop()
+       
+        seznam = list(smiselni)
         n = len(seznam)
         nova = seznam[0] #do sedaj že narejen izraz, postopoma distributiramo
-
-        #distributivnost:############################################katastrofa!!!!!!!!!!!!!!!!!!!!ampak deluje
+        #distributivnost:      (katastrofalno napisano, ampak pravilno deluje; bom popravila, če utegnem)
         for i in range(1,n):
-            if (type(nova) == Spr or type(nova) == Neg) and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
-                nova = Ali(nova,seznam[i]).bistvo()
-            elif (type(nova) == Spr or type(nova) == Neg) and type(seznam[i]) == In:
-                sez=set()
-                mn={m for m in seznam[i].sez}
-                for m in mn:
-                    if type(m) == Spr or type(m) == Neg:
-                        sez.add(Ali(nova,m).bistvo())
-                    elif type(m) == Ali:
-                        for s in m:
-                            sez.add(Ali(nova,s).bistvo())
-                    else: print('napaka pri distr.!')
-                nova = In(*tuple(k for k in sez))
-            elif type(seznam[i]) == Ali and (type(nova) == Spr or type(nova) == Neg):
-                nova.sez.add(k for k in seznam[i].sez)
+            naslednja = seznam[i]
 
+            if type(nova) == T: return T()
 
-            elif type(nova) == Ali and (type(seznam[i]) == Spr or type(seznam[i]) == Neg):
-                nova.sez.add(seznam[i])
-            elif type(nova) == Ali and type(seznam[i]) == Ali:
-                nova.sez.add(k for k in seznam[i].sez)
-            elif type(nova) == Ali: #seznam[i] je tipa In
-                nova_sez = [k for k in nova.sez]
-                sez=set()
-                mn={m for m in seznam[i].sez}
-                for m in mn:
-                    zacasen_seznam = nova_sez
+            elif (type(nova) == Spr or type(nova) == Neg) and (type(naslednja) == Spr or type(naslednja) == Neg):
+                nova = Ali(nova,naslednja).bistvo()
+            elif (type(nova) == Spr or type(nova) == Neg) and type(naslednja) == In:
+                sez = set()
+                for m in naslednja.sez:
                     if type(m) == Spr or type(m) == Neg:
-                          zacasen_seznam.append(m)
-                          sez.add(Ali(*tuple(k for k in zacasen_seznam)).bistvo())
+                        stavek = Ali(nova,m).bistvo()
+                        if not type(stavek) == T: sez.add(stavek)
                     elif type(m) == Ali:
-                        for s in m:
-                              zacasen_seznam.append(s)
-                        sez.add(Ali(*tuple(k for k in zacasen_seznam)).bistvo())
+                        m.sez.add(nova)
+                        m = m.bistvo()
+                        if not type(m) == T: sez.add(m)
                     else: print('napaka pri distr.!')
-                nova = In(*tuple(k for k in sez))
+                nova = In(*tuple(k for k in sez)).bistvo()
+            elif type(naslednja) == Ali and (type(nova) == Spr or type(nova) == Neg):
+                naslednja.sez.add(nova)
+                naslednja = naslednja.bistvo()
+                nova = naslednja
+                
+
+            elif type(nova) == Ali and (type(naslednja) == Spr or type(naslednja) == Neg):
+                nova.sez.add(naslednja)
+                nova = nova.bistvo()
+            elif type(nova) == Ali and type(naslednja) == Ali:
+                nova.sez.add(k for k in naslednja.sez)
+                nova = nova.bistvo()
+            elif type(nova) == Ali: #naslednja je tipa In                
+                sez = set()
+                for m in naslednja.sez:
+                    if type(m) == Spr or type(m) == Neg:
+                        mn = nova.sez.union({m})
+                        izraz = Ali(*tuple(i for i in mn)).bistvo()
+                        if not type(izraz) == T: sez.add(izraz)
+                    elif type(m) == Ali:
+                        mn = nova.sez.union(m.sez)
+                        izraz = Ali(*tuple(i for i in mn)).bistvo()
+                        if not type(izraz) == T: sez.add(izraz)
+                    else: print('napaka pri distr.!')
+                nova = In(*tuple(k for k in sez)).bistvo()
 
                 
-            elif (type(seznam[i]) == Spr or type(seznam[i]) == Neg) and type(nova) == In:
-                sez=set()
-                mn={m for m in nova.sez}
-                for m in mn:
+            elif (type(naslednja) == Spr or type(naslednja) == Neg) and type(nova) == In:
+                sez = set()
+                for m in nova.sez:
                     if type(m) == Spr or type(m) == Neg:
-                        sez.add(Ali(seznam[i],m).bistvo())
+                        stavek = Ali(naslednja,m).bistvo()
+                        if not type(stavek) == T: sez.add(stavek)
                     elif type(m) == Ali:
-                        for s in m:
-                            sez.add(Ali(seznam[i],s).bistvo())
+                        m.sez.add(naslednja)
+                        m = m.bistvo()
+                        if not type(m) == T: sez.add(m)
                     else: print('napaka pri distr.! 2')
-                nova = In(*tuple(k for k in sez))              
-            elif type(nova) == In and type(seznam[i]) == Ali:
-                nova_sez = [k for k in seznam[i].sez]
-                sez=set()
-                mn={m for m in nova.sez}
-                for m in mn:
-                    zacasen_seznam = nova_sez
+                nova = In(*tuple(k for k in sez)).bistvo()             
+            elif type(nova) == In and type(naslednja) == Ali:
+                sez = set()
+                for m in nova.sez:
                     if type(m) == Spr or type(m) == Neg:
-                          zacasen_seznam.append(m)
-                          sez.add(Ali(*tuple(k for k in zacasen_seznam)).bistvo())
+                        mn = naslednja.sez.union({m})
+                        izraz = Ali(*tuple(i for i in mn)).bistvo()
+                        if not type(izraz) == T: sez.add(izraz)
                     elif type(m) == Ali:
-                        for s in m:
-                              zacasen_seznam.append(s)
-                        sez.add(Ali(*tuple(k for k in zacasen_seznam)).bistvo())
+                        mn = naslednja.sez.union(m.sez)
+                        izraz = Ali(*tuple(i for i in mn)).bistvo()
+                        if not type(izraz) == T: sez.add(izraz)
                     else: print('napaka pri distr.!')
-                nova = In(*tuple(k for k in sez))               
+                nova = In(*tuple(k for k in sez)).bistvo()             
             else: #In ali In
                 sez = set()
                 for m in nova.sez:
-                   for n in seznam[i].sez:
-                      zacasen = []
-                      zacasen.append(k for k in m.sez) if type(m) == Ali else zacasen.append(m)
-                      zacasen.append(k for k in n.sez) if type(n) == Ali else zacasen.append(n)
-                      sez.add(Ali(*tuple(k for k in zacasen))) 
-                nova = In(*tuple(k for k in sez))
+                    for n in naslednja.sez:
+                        zacasen = set()
+                        if type(m) == Ali: zacasen = zacasen.union(m.sez)
+                        else: zacasen.add(m)
+                        if type(n) == Ali: zacasen = zacasen.union(n.sez)
+                        else: zacasen.add(n)
+                        stavek = Ali(*tuple(k for k in zacasen)).bistvo()
+                        if not type(stavek) == T: sez.add(stavek)
+                nova = In(*tuple(k for k in sez)).bistvo()
                 
         return nova.bistvo()
 
