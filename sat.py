@@ -1,29 +1,33 @@
 from izrazi_cnf import *
-from primeri import *
-from generator import *
-from sudoku import *
-from barvanje import *
-from hadamard import *
+##from primeri import *
+##from generator import *
+##from sudoku import *
+##from barvanje import *
+##from hadamard import *
 import time
 
-def sat(izraz):
+def sat(izraz, cas = False):
     '''Funkcija sprejme logični izraz in če je rešljiv, vrne slovar možnih vrednosti.'''
 
+    if type(izraz) == str: return izraz #za potrebe prevedb
+    
     b = time.clock()
     izraz = izraz.cnf() #sedaj je izraz v konjuktivni obliki
     
-##    print('začetna cnf oblika=', izraz)
-
-    if izraz == T(): return 'Izraz je rešljiv za kakršnekoli vrednosti spremenljivk.'
-    elif izraz == F(): return 'Izraz ni rešljiv.'
+    if izraz == T():
+        if cas: print('sat time=', time.clock()-b)
+        return 'Izraz je rešljiv za kakršnekoli vrednosti spremenljivk.'
+    elif izraz == F():
+        if cas: print('sat time=', time.clock()-b)
+        return 'Izraz ni rešljiv.'
 
     literal = dict() #slovar spremenljivk z določenimi vrednostmi
     if type(izraz) == In: stavki = [i for i in izraz.sez] #stavki, ki jih je še potrebno predelati
     else: stavki = [izraz]
 
     rezultat = pomo(stavki, literal)
-    c = time.clock()
-##    print('sat time=', c-b)
+
+    if cas: print('sat time=', time.clock()-b)
     if type(rezultat) == F: return 'Izraz ni rešljiv.'
     elif type(rezultat) == T: return 'Izraz je rešljiv za kakršnekoli vrednosti spremenljivk.'
     else: return rezultat
@@ -42,15 +46,14 @@ def pomo(stavki, literal):
     
     stavki, literal = ciste_pojavitve(stavki, literal) #rešimo se čistih pojavitev
     if not stavki: return literal
-    
-    neznane = uredi_po_frekvenci(stavki) #uredimo še nedoločene literale po frekvenci pojavljanja
-        
+    neznane = uredi_po_frekvenci(stavki)
+
+    trenutna = max(neznane, key = neznane.get)
     for i in [F(),T()]:
         stavki_prej = list(stavki)
         literal_prej = dict(literal)
         neznane_prej = dict(neznane)
         
-        trenutna = max(neznane, key = neznane.get)
         literal[trenutna] = i
         
         #gremo po vseh stavkih in vstavljamo vrednost za našo trenutno spr.
@@ -80,11 +83,12 @@ def pomo(stavki, literal):
                 neznane = dict(neznane_prej)
             else: return F()
         elif type(vmes) == T: return literal
-        else: return literal
+        else: return vmes
 
 
 def uredi_po_frekvenci(stavki):
-    '''Sprejme stavke in vrne spremenljivke v slovarju, skupaj z njihovimi frekvencami.'''
+    '''Sprejme stavke in vrne spremenljivke v slovarju, skupaj z njihovimi frekvencami in dolžinami
+    najkrajših stavkov, v katerih nastopajo.'''
     
     slovar = dict()
     for stavek in stavki:
@@ -198,4 +202,3 @@ def samostojne(stavki, literal):
                             stavki_dolzina[n].remove(stavek)
                             break
     return [st for k in stavki_dolzina.keys() for st in stavki_dolzina[k]], literal
-

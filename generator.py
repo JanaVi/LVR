@@ -1,10 +1,11 @@
 import random
 from izrazi_cnf import *
 
-def test(n = 10, k = 20):
-    '''funkcija nam vrne izraz v cnf obliki, ki vsebuje največ n različnik spremenljivk in ima dolžino k'''
+def generiraj(n = 10, k = 20):
+    '''Funkcija nam vrne izraz v cnf obliki, ki vsebuje največ n različnik
+    spremenljivk in ima dolžino k.'''
     
-    if n == 0 or k == 0: return 'zaenkrat neumnost'
+    if n == 0 or k == 0: return T()
     
     izraz = In()
     sez = []
@@ -20,6 +21,7 @@ def test(n = 10, k = 20):
     for i in pozicija:
         stavki.append(Ali(*tuple(s for s in sez[start:i+1])).bistvo())
         start = i + 1
+
     stavki.append(Ali(*tuple(s for s in sez[start:])).bistvo())
     izraz = In(*tuple(i for i in stavki)).bistvo()
     return izraz

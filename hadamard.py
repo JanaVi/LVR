@@ -9,7 +9,8 @@ def hadamard_pretvori(n):
         return Spr('{0}{1}_{2}'.format(u,v,n))
 
     def polovica(sez,m):
-        '''Sprejme seznam izjav sez in število m. Funkcija vrne izjavo, ki je ekvivalentna izjavi, da je v seznamu resničnih natanko m izjav.'''
+        '''Sprejme seznam izjav sez in število m. Funkcija vrne izjavo, ki je ekvivalentna temu,
+        da je v seznamu resničnih natanko m izjav.'''
         
         if m == 0: return In(*tuple(Neg(i) for i in sez)) #nobena izjava ne sme veljati
         elif len(sez) == m: return In(*tuple(i for i in sez)).bistvo() #vse izjave morajo veljati
@@ -18,8 +19,8 @@ def hadamard_pretvori(n):
             In(Neg(sez[0]),polovica(sez[1:],m)) #prva izjava ne velja
             )
 
-    if n%2 == 1: return 'Ne obstaja Hadamardova matrika te dimezije.'
-    if n == 0: return 'Ne obstaja Hadamardova matrika te dimezije.'
+    if n%2 == 1: return F()
+    if n == 0: return F()
     
     prva_vrstica = In(*tuple(sprem(1,j,1) for j in range(1,n+1)))
     prvi_stolpec = In(*tuple(sprem(i,1,1) for i in range(1,n+1)))

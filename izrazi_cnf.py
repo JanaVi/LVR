@@ -1,5 +1,3 @@
-import copy
-
 class T():
     def __init__(self):
         pass
@@ -13,9 +11,9 @@ class T():
     def __hash__(self):
         return hash(repr(self))
 
-    def vrednost(self,slo):
-        return True
-
+    def vrednost(self,slovar):
+        return T()
+    
     def poenostavi(self):
         return self
 
@@ -40,8 +38,8 @@ class F():
     def __hash__(self):
         return hash(repr(self))
 
-    def vrednost(self,slo):
-        return False
+    def vrednost(self,slovar):
+        return F()
 
     def poenostavi(self):
         return self
@@ -70,8 +68,9 @@ class Spr():
     def __hash__(self):
         return hash(repr(self))
 
-    def vrednost(self,slo):
-        return slo[self.ime]
+    def vrednost(self,slovar):
+        if self in slovar: return slovar[self]
+        else: return self
 
     def poenostavi(self):
         return self
@@ -103,8 +102,12 @@ class Neg():
     def __hash__(self):
         return hash(repr(self))
 
-    def vrednost(self,slo):
-        return not self.izr.vrednost(slo)
+    def vrednost(self,slovar):
+        if self.izr in slovar:
+            i = slovar[self.izr]
+            if i == T(): return F()
+            else: return T()
+        else: return self
 
     def poenostavi(self):
         a = self.izr.poenostavi()
@@ -166,15 +169,16 @@ class In():
     def __hash__(self):
         return hash(repr(self))
 
-    def vrednost(self,slo):
-        a=True
+    def vrednost(self,slovar):
+        s = set()
         for i in self.sez:
-            a = a and i.vrednost(slo)
-            if a==False:
-                return a
-        return a
+            a = i.vrednost(slovar)
+            if a == F(): return a
+            elif a == T(): pass
+            else: s.add(a)
+        return In(*tuple(i for i in s)).bistvo()
 
-    def bistvo(self): #In(Spr(p)) spremeni v Spr(p); In(a,..,Neg(a)) spremeni v F(); 
+    def bistvo(self): #In(Spr(p)) spremeni v Spr(p); In(a,..,Neg(a)) spremeni v F()
         if len(self.sez)==0: return T()
         vsebina = set()
         for i in self.sez:
@@ -187,7 +191,7 @@ class In():
 
     def cnf(self):
         if len(self.sez)==0: return T()
-        elif len(self.sez)==1: return self.sez.pop().cnf()
+        elif len(self.sez)==1: return set(self.sez).pop().cnf()
 
         #law of union, law of intersection, complementary law:
         smiselni = set()
@@ -207,7 +211,7 @@ class In():
 
     def poenostavi(self):
         if len(self.sez)==0: return T()
-        elif len(self.sez)==1: return self.sez.pop().poenostavi()
+        elif len(self.sez)==1: return set(self.sez).pop().poenostavi()
         slo = {}
         for i in self.sez:
             i=i.poenostavi()
@@ -291,13 +295,14 @@ class Ali():
     def __hash__(self):
         return hash(repr(self))
 
-    def vrednost(self,slo):
-        a=False
+    def vrednost(self,slovar):
+        s = set()
         for i in self.sez:
-            a= a or i.vrednost(slo)
-            if a==True:
-                return a
-        return a
+            a = i.vrednost(slovar)
+            if a == T(): return a
+            elif a == F(): pass
+            else: s.add(a)
+        return Ali(*tuple(i for i in s)).bistvo()
 
     def bistvo(self):
         if len(self.sez)==0: return F()
@@ -313,7 +318,7 @@ class Ali():
 
     def cnf(self):
         if len(self.sez)==0: return F()
-        elif len(self.sez)==1: return self.sez.pop().cnf()
+        elif len(self.sez)==1: return set(self.sez).pop().cnf()
 
         #law of union, law of intersection, complementary law:
         smiselni = set()
@@ -337,6 +342,7 @@ class Ali():
         seznam = list(smiselni)
         n = len(seznam)
         nova = seznam[0] #do sedaj že narejen izraz, postopoma distributiramo
+        
         #distributivnost:      (katastrofalno napisano, ampak pravilno deluje; bom popravila, če utegnem)
         for i in range(1,n):
             naslednja = seznam[i]
@@ -355,7 +361,6 @@ class Ali():
                         m.sez.add(nova)
                         m = m.bistvo()
                         if not type(m) == T: sez.add(m)
-                    else: print('napaka pri distr.!')
                 nova = In(*tuple(k for k in sez)).bistvo()
             elif type(naslednja) == Ali and (type(nova) == Spr or type(nova) == Neg):
                 naslednja.sez.add(nova)
@@ -380,7 +385,6 @@ class Ali():
                         mn = nova.sez.union(m.sez)
                         izraz = Ali(*tuple(i for i in mn)).bistvo()
                         if not type(izraz) == T: sez.add(izraz)
-                    else: print('napaka pri distr.!')
                 nova = In(*tuple(k for k in sez)).bistvo()
 
                 
@@ -394,7 +398,6 @@ class Ali():
                         m.sez.add(naslednja)
                         m = m.bistvo()
                         if not type(m) == T: sez.add(m)
-                    else: print('napaka pri distr.! 2')
                 nova = In(*tuple(k for k in sez)).bistvo()             
             elif type(nova) == In and type(naslednja) == Ali:
                 sez = set()
@@ -407,7 +410,6 @@ class Ali():
                         mn = naslednja.sez.union(m.sez)
                         izraz = Ali(*tuple(i for i in mn)).bistvo()
                         if not type(izraz) == T: sez.add(izraz)
-                    else: print('napaka pri distr.!')
                 nova = In(*tuple(k for k in sez)).bistvo()             
             else: #In ali In
                 sez = set()
@@ -427,7 +429,7 @@ class Ali():
 
     def poenostavi(self):
         if len(self.sez)==0: return F()
-        elif len(self.sez)==1: return self.sez.pop().poenostavi()
+        elif len(self.sez)==1: return set(self.sez).pop().poenostavi()
         slo = {}
         for i in self.sez:
             i=i.poenostavi()
