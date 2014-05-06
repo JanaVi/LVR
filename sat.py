@@ -1,9 +1,4 @@
 from izrazi_cnf import *
-##from primeri import *
-##from generator import *
-##from sudoku import *
-##from barvanje import *
-##from hadamard import *
 import time
 
 def sat(izraz, cas = False):
@@ -202,3 +197,4 @@ def samostojne(stavki, literal):
                             stavki_dolzina[n].remove(stavek)
                             break
     return [st for k in stavki_dolzina.keys() for st in stavki_dolzina[k]], literal
+
