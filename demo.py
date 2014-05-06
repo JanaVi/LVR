@@ -1,11 +1,8 @@
 from sat import *
-from primeri import *
 from barvanje import *
 from hadamard import *
 from izrazi_cnf import *
 from tkinter import *
-from tkinter import messagebox
-import time
 
 class Demo():
     def __init__(self, glavnoOkno):
@@ -19,7 +16,7 @@ class Demo():
         self.frame = Frame(self.glavnoOkno, height = 300, width = 580, bd = 3, relief = SUNKEN)
         self.frame.place(x = 210, y = 10)
         
-        self.obvestilo = StringVar()#obvestila v osrednjem okvirju
+        self.obvestilo = StringVar() #obvestila v osrednjem okvirju
         self.obvestilo.set('''Avtorici: Barbara Bajcer in Jana Vidrih''')
         self.obvestila = Label(self.frame, height = 25, width = 71, textvariable = self.obvestilo,
                                font=("Helvetica", 10), background="white", anchor = NW, justify = LEFT)

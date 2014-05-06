@@ -1,4 +1,5 @@
 from izrazi_cnf import *
+from primeri import *
 import time
 
 def sat(izraz, cas = False):
