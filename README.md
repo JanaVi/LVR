@@ -19,7 +19,7 @@ Projekt je sestavljen iz dveh delov:
 
 * **hadamard.py**: Prevedba problema za hadamardovo matriko poljubne dimenzije v boolov izraz.
 
-* **sat.py**: Vsebuje [dpll](http://www.dis.uniroma1.it/~liberato/ar/dpll/dpll.html) algoritem. Algoritem sva izboljšali s sortiranjem literalov po frekvenci pojavitve (vzame najpogostejšega) in nato (če jih je več z maksimalno frekvenco) po dolzini najkrajšega stavka, v katerem se določeni literal nahaja.
+* **sat.py**: Vsebuje [dpll](http://www.dis.uniroma1.it/~liberato/ar/dpll/dpll.html) algoritem. Algoritem sva izboljšali s sortiranjem literalov po frekvenci pojavitve (vzame najpogostejšega) in nato (če jih je več z maksimalno frekvenco) po dolžini najkrajšega stavka, v katerem se določeni literal nahaja.
 
 * **primeri.py**: Vsebuje primere za SAT solver in metodo cnf, sudoku in barvanje grafa.
 
@@ -27,7 +27,7 @@ Projekt je sestavljen iz dveh delov:
 
 * **generator.py**: Vsebuje funkcijo generiraj, ki nam generira boolovo formulo v cnf obliki.
 
-* **testiranje.py**: Vsebuje dve funkciji. Prvo, ki za dani logični izraz in slovar literalov s pripadajočimi vrednostmi T() ali F(), preveri, če tako nastavljeni literali izpolnjujejo dani izraz. In drugo, ki generira naključne primere in v osnovi vrača porabljen čas za obravnavanje le-tega.
+* **testiranje.py**: Vsebuje dve funkciji. Prvo, ki za dani logični izraz in slovar literalov s pripadajočimi vrednostmi preveri, če tako nastavljeni literali izpolnjujejo dani izraz. In drugo, ki generira naključne primere in v osnovi vrača porabljen čas za obravnavanje le-tega.
 
 
 ## Uporaba
