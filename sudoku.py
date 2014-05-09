@@ -91,9 +91,9 @@ def sudoku_sat_to_matrika(slovar):
         
     print(s)
 
-def sudoku(zacetni):
+def sudoku(zacetni, cas = True):
     '''Sprejme začetne pogoje, podane s seznamom trojic [(i1,j1,k1),(i2,j2,k2),...]. Trojica (i,j,k)
     predstavlja polje (i,j), ter vrednost k na tem polju. Funkcija vrne rešitev sudokuja v obliki matrike.'''
     
-    return sudoku_sat_to_matrika(sat(sudoku_pretvori(zacetni)))
+    return sudoku_sat_to_matrika(sat(sudoku_pretvori(zacetni),cas))
 
