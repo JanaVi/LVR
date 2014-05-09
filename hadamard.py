@@ -1,5 +1,6 @@
 from izrazi_cnf import *
 from sat import *
+from primeri import *
 
 def hadamard_pretvori(n):
     '''Funkcija sprejme število n, vrne pa boolov izraz, s pomočjo katerega ugotovimo,

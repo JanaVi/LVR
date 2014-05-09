@@ -2,7 +2,7 @@ import random
 from izrazi_cnf import *
 
 def generiraj(n = 10, k = 20):
-    '''Funkcija nam vrne izraz v cnf obliki, ki vsebuje največ n različnik
+    '''Funkcija nam vrne izraz v cnf obliki, ki vsebuje največ n različnih
     spremenljivk in ima dolžino k.'''
     
     if n == 0 or k == 0: return T()

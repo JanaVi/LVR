@@ -1,5 +1,6 @@
 from izrazi_cnf import *
 from sat import *
+from primeri import *
 
 def barvanje_pretvori(g,k):
     '''Funkcija sprejme slovar g, ki podaja graf in število barv k, s katerimi želimo pobarvati naš graf.
