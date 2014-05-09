@@ -75,7 +75,7 @@ def hadamard_sat_to_matrika(slovar):
         
     print(s)
 
-def hadamard(n):
-    '''Funkcija sprejme število n in vrne Madamardovo matriko dimenzije n x n (če ta obstaja).'''
+def hadamard(n, cas = True):
+    '''Funkcija sprejme število n in vrne Hadamardovo matriko dimenzije n x n (če ta obstaja).'''
     
-    return hadamard_sat_to_matrika(sat(hadamard_pretvori(n)))
+    return hadamard_sat_to_matrika(sat(hadamard_pretvori(n),cas))

@@ -35,9 +35,9 @@ def barvanje_sat_to_barve(slovar):
             pom[s[0]] = s[1]
     return pom
 
-def barvanje(g,k):
+def barvanje(g,k, cas = True):
     '''Sprejme slovar g, ki podaja graf in število barv, s katerimi želimo pobarvati naš graf.
     Funkcija vrne slovar vozlišč z njihovimi barvami.'''
 
-    return barvanje_sat_to_barve(sat(barvanje_pretvori(g,k)))
+    return barvanje_sat_to_barve(sat(barvanje_pretvori(g,k),cas))
 

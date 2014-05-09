@@ -2,6 +2,7 @@ from sat import *
 from barvanje import *
 from hadamard import *
 from izrazi_cnf import *
+from sudoku import *
 from tkinter import *
 
 class Demo():
@@ -43,12 +44,12 @@ class Demo():
         self.lab.destroy()
         self.obvestilo.set('''Podajanje logičnih izrazov:
 
-- Spremenljivke podamo kot: Spr(ime), kjer je ime niz
-- Negacijo izraza podamo kot: Neg(a), kjer je a nek logični izraz
-- Logični operator IN podamo kot: In(a_1, ... , a_n), kjer so a_1, ... , a_n logični izrazi
-- Logični operator ALI podamo kot: Ali(a_1, ... , a_n), kjer so a_1, ... , a_n logični izrazi
-- Vrednost TRUE podamo kot: T()
-- Vrednost FALSE podamo kot: F()
+- Spremenljivke podamo kot: Spr(ime), kjer je ime niz.
+- Negacijo izraza podamo kot: Neg(a), kjer je a nek logični izraz.
+- Logični operator IN podamo kot: In(a_1, ... , a_n), kjer so a_1, ... , a_n logični izrazi.
+- Logični operator ALI podamo kot: Ali(a_1, ... , a_n), kjer so a_1, ... , a_n logični izrazi.
+- Vrednost TRUE podamo kot: T().
+- Vrednost FALSE podamo kot: F().
 
 Primer:  ( ¬a ∧ b ) ∨ b ∨ ⊥  zapišemo kot:  Ali ( In ( Neg(Spr('a')), Spr('b') ), Spr('b'), F() )''')
 
@@ -59,7 +60,8 @@ Primer:  ( ¬a ∧ b ) ∨ b ∨ ⊥  zapišemo kot:  Ali ( In ( Neg(Spr('a')), 
         primer_3 = Ali(e,In(a,Ali(a,Neg(b),d),c))
         primer_4 = In(F(),a)
         
-        self.obvestilo.set('''- sat(izraz)  nam vrne slovar spremenljivk in njihovih vrednosti, ki zadostijo temu, da je izraz rešljiv.
+        self.obvestilo.set('''- Klic sat(izraz)  nam vrne slovar spremenljivk in njihovih boolovih vrednosti, ki zadostijo temu,
+da je izraz rešljiv.
 - izraz.cnf()  nam vrne izraz v CNF obliki. \n
 
 primer_1 = {0}
@@ -130,7 +132,7 @@ g1 = {0}
 barvanje(g1,2) = {1}
 
 
-g2 = {2}   #poln graf
+g2 = {2}   #poln graf na petih vozliščih
 barvanje(g2,4) = {3}
 '''.format(g1,barvanje(g1,2),g2,barvanje(g2,4)))
 

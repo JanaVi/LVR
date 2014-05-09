@@ -1,5 +1,6 @@
 from izrazi_cnf import *
 from primeri import *
+from generator import *
 import time
 
 def sat(izraz, cas = False):
@@ -23,7 +24,7 @@ def sat(izraz, cas = False):
 
     rezultat = pomo(stavki, literal)
 
-    if cas: print('sat time=', time.clock()-b)
+    if cas: print('sat time =', time.clock()-b)
     if type(rezultat) == F: return 'Izraz ni rešljiv.'
     elif type(rezultat) == T: return 'Izraz je rešljiv za kakršnekoli vrednosti spremenljivk.'
     else: return rezultat

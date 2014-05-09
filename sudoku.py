@@ -66,12 +66,11 @@ def sudoku_pretvori(zacetni):
     return In(*tuple(i for i in f1.sez|v2|f3.sez|v4|f5.sez|v6|f7.sez|v8|danipogoji.sez))
 
 def sudoku_sat_to_matrika(slovar):
-    '''Sprejme slovar s ključi (i,j,k) in vrednostmi ⊤ in ⊥. Ključ (i,j,k) z vrednostjo ⊤ pove,
+    '''Sprejme slovar s ključisat (i,j,k) in vrednostmi ⊤ in ⊥. Ključ (i,j,k) z vrednostjo ⊤ pove,
     da se v kvadratku (i,j) nahaja število k. Funkcija vrne rešitev sudokuja v obliki matrike.'''
     
     if slovar == 'Izraz ni rešljiv.': return 'Sudoku s tako podanimi začetnimi vrednostmi ni rešljiv.'
     
-    ################popravi za že rešen sudoku
     
     pom = dict()
     for k in slovar.keys():
