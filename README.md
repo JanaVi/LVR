@@ -35,8 +35,7 @@ Projekt je sestavljen iz dveh delov:
 * Za zagon demonstracije poženi datoteko *demo.py*.
 * Za generiranje naključnega izraza kliči funkcijo generiraj(max število spremenljivk, dolžina izraza) (v *sat.py* ali *generator.py*). Funkcija vrne izraz v cnf obliki.
 * Za zagon testnih primerov odpri datoteko *testiranje.py*. Kliči funkcijo test(n,k,s,izpisuj=False,cas=True). Funkcija testira pravilnost SAT solverja s pomočjo generatorja primerov. Števili n in k označujeta maksimalno število različnih literalov v izrazu in dolžino izraza, s pa označuje, koliko primerov želimo generirati. Za dodatne možnosti izpisovanja pravilnosti in porabljenega časa glej opis funkcije.
-* Za ogled že napisanih primerov odpri *primeri.py* in nato v primerni datoteki (za sudoku odpri *sudoku.py*, za reševanje splošnega logičnega izraza *sat.py*, ...) preizkusi te primere.
-* Za reševanje poljubnih logičnih izrazov odpri datoteko *sat.py* in kliči sat(moj_primer).
+* Za ogled že napisanih primerov odpri *primeri.py*. Vse primere lahko preizusiš z zagonom datoteke *demo.py*. Za reševanje poljubnih logičnih izrazov kliči sat(moj_primer).
 
 
 ## Opombe
