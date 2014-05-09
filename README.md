@@ -41,4 +41,4 @@ Projekt je sestavljen iz dveh delov:
 
 ## Opombe
 
-* Za reševanje lažjega sudokuja najin algoritem porabi prb. 20 sekund, ne priporočava reševanje praznega sudokuja ali ekstremno težkih primerov.
+* Za reševanje lažjega sudokuja najin algoritem porabi prb. 15 sekund, ne priporočava reševanje praznega sudokuja ali ekstremno težkih primerov.
